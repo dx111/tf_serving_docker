@@ -3,13 +3,11 @@ FROM dx111/tf_serving:1.14.0-mlu
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG C.UTF-8
 
-RUN  sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && \
-    apt-get clean && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     python3 \
     python3-pip
-RUN pip install --upgrade pip -i https://pypi.douban.com/simple \
+RUN pip3 install --upgrade pip \
     && python3 -m pip install --upgrade setuptools
 
 
