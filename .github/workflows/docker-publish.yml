@@ -1,0 +1,45 @@
+name: Docker
+
+on:
+  push:
+    # Publish `main` as Docker `latest` image.
+    branches:
+      - main
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME: tf_serving
+  IMAGE_TYPE: py3-mlu
+  DOCKERFILE_NAME: Dockerfile
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build image
+        run: |
+          docker build . --file $DOCKERFILE_NAME --tag $IMAGE_NAME
+
+      - name: Log into registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push image
+        run: |
+          IMAGE_ID=${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME
+
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          VERSION=$(echo $(date +%y.%m.%d) | tr '[A-Z]' '[a-z]')
+          
+          docker tag $IMAGE_NAME $IMAGE_ID:$IMAGE_TYPE-$VERSION
+          
+          docker push $IMAGE_ID:$IMAGE_TYPE-$VERSION
