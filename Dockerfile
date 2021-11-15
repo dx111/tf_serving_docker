@@ -16,4 +16,5 @@ RUN pip3 install -i https://pypi.douban.com/simple \
     opencv-python==3.2.0.8 \
     pillow \
     tensorflow==1.14 \
+    tensorflow-serving-api==1.14 \
     flask
